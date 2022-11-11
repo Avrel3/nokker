@@ -43,4 +43,11 @@ nokker.command(
   }
 );
 
+nokker.command({
+  command: "*",
+  handler() {
+    nokker.showHelp();
+  },
+});
+
 export default nokker;
