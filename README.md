@@ -1,1 +1,0 @@
-# Nokker command line tookit
