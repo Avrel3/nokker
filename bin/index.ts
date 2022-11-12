@@ -1,7 +1,7 @@
 import yargs from "yargs/yargs";
 import { hideBin } from "yargs/helpers";
 import { prompt } from "enquirer";
-import { green, red, white, yellow } from "colorette";
+import { red, white, yellow } from "colorette";
 /// ---  --- ///
 import fs from "fs";
 import path from "path";

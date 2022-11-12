@@ -1,7 +1,5 @@
-import fs from "fs";
 import Axios from "axios";
 import AdmZip from "adm-zip";
-import path from "path";
 import { blue, green, red, yellow } from "colorette";
 
 export default async function (

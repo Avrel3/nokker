@@ -3,9 +3,9 @@ const tsconfig = (src: string, build: string) =>
     "compilerOptions": {
       "target": "ES6",
       "module": "CommonJS",
-      "rootDir": "./${src}",
+      "rootDir": "${src}",
       "moduleResolution": "node",
-      "outDir": "./${build}",
+      "outDir": "${build}",
       "removeComments": true,
       "noEmitOnError": true,
       "esModuleInterop": true,
