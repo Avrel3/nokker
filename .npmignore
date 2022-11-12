@@ -1,3 +1,8 @@
 node_modules/
-bin/
+
+src/
+
 tsconfig.json
+.gitignore
+.npmignore
+package-lock.json

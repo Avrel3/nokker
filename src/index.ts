@@ -12,12 +12,8 @@ import tsconfig from "./tsconfig";
 // -- ---//
 /// --- --- ///
 
-const config = JSON.parse(
-  fs.readFileSync(path.join(__dirname, "..", "package.json")).toString()
-);
-
 const cli = yargs(hideBin(process.argv))
-  .scriptName(config.name)
+  .scriptName("nokker")
   .usage(`$0 <cmd> [args]`)
   .alias("v", "version")
   .alias("h", "help");
@@ -136,8 +132,8 @@ cli.command(
       default: "src",
     },
     build: {
-      alias: "o",
-      descrbe: "Build dir",
+      alias: "d",
+      descrbe: "Out dir",
       type: "string",
       default: "build",
     },

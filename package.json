@@ -2,20 +2,33 @@
   "name": "nokker",
   "version": "1.0.0",
   "description": "CLI",
-  "main": "out/index.js",
-  "bin": {
-    "nokker": "out/index.js"
-  },
-  "scripts": {
-    "build": "tsc"
-  },
-  "keywords": [],
-  "author": "Avrel3",
+  "private": false,
   "license": "MIT",
-  "devDependencies": {
-    "@types/adm-zip": "^0.5.0",
-    "@types/node": "^18.11.9",
-    "@types/yargs": "^17.0.13"
+  "main": "lib",
+  "files": [
+    "lib"
+  ],
+  "bin": {
+    "nokker": "bin/nokker",
+    "nkr": "bin/nkr"
+  },
+  "homepage": "https://github.com/Avrel3/nokker/#readme",
+  "scripts": {
+    "build": "tsc",
+    "build:esm": "tsc --module es6 --target es5 --outDir lib/esm",
+    "build:cjs": "tsc --module commonjs --target es5 --outDir lib/cjs",
+    "export": "npm run build:esm && npm run build:cjs"
+  },
+  "keywords": [
+    "cli"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Avrel3/nokker.git"
+  },
+  "author": {
+    "name": "Avrel",
+    "url": "https://github.com/Avrel3"
   },
   "dependencies": {
     "adm-zip": "^0.5.9",
@@ -23,5 +36,10 @@
     "colorette": "^2.0.19",
     "enquirer": "^2.3.6",
     "yargs": "^17.6.2"
+  },
+  "devDependencies": {
+    "@types/adm-zip": "^0.5.0",
+    "@types/node": "^18.11.9",
+    "@types/yargs": "^17.0.13"
   }
 }

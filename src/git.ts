@@ -29,6 +29,6 @@ export default async function (
         blue("\nPrivate repo -> Add Github token")
       );
     }
-    return red(e.message);
+    return yellow("Unexpected error") + red("\n\t- Connection error");
   }
 }
