@@ -1,7 +1,7 @@
 {
   "name": "nokker",
   "version": "1.0.0",
-  "description": "CLI",
+  "description": "Nodejs cli for building projects",
   "private": false,
   "license": "MIT",
   "main": "lib",
@@ -20,7 +20,11 @@
     "export": "npm run build:esm && npm run build:cjs"
   },
   "keywords": [
-    "cli"
+    "cli",
+	"git",
+	"license generator",
+	"config generator",
+	"template generator"
   ],
   "repository": {
     "type": "git",
