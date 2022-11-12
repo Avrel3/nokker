@@ -3,12 +3,12 @@ import { hideBin } from "yargs/helpers";
 import { prompt } from "enquirer";
 import { green, red, white, yellow } from "colorette";
 /// ---  --- ///
-import crypto from "crypto";
 import fs from "fs";
 import path from "path";
 //-- ---//
 import license from "./license";
 import Git from "./git";
+import tsconfig from "./tsconfig";
 // -- ---//
 /// --- --- ///
 
@@ -23,67 +23,7 @@ const cli = yargs(hideBin(process.argv))
   .alias("h", "help");
 
 cli.command(
-  "uid",
-  "Generates random crypto hash",
-  {
-    length: {
-      alias: "l",
-      describe: "Length of the string",
-      type: "number",
-      default: 8,
-    },
-  },
-  ({ length }: { length: number }) => {
-    let res: string = crypto.randomBytes(length).toString("hex");
-    console.log(res);
-  }
-);
-
-cli.command(
-  "mit",
-  "Creates MIT License",
-  {
-    name: {
-      alias: "n",
-      describe: "Name of the user",
-      type: "string",
-      default: "",
-    },
-    year: {
-      alias: "y",
-      describe: "Year of the copyright",
-      type: "number",
-      default: new Date().getFullYear(),
-    },
-  },
-  async function ({ name, year }: { name: string; year: number }) {
-    try {
-      const lic = license(name, year),
-        cwd = path.join(process.cwd(), "LICENSE"),
-        crt = (): void => {
-          fs.writeFileSync(cwd, lic, {
-            encoding: "utf-8",
-          });
-          console.info(green(`MIT LICENSE created at ${cwd}`));
-        };
-      if (fs.existsSync(cwd)) {
-        const res: { proceed: boolean } = await prompt({
-          type: "confirm",
-          name: "proceed",
-          message: "Would you like to overwrite the LICENSE file ?",
-        });
-        if (res.proceed) crt();
-        return;
-      }
-      crt();
-    } catch (e: any) {
-      console.error(red(e.message));
-    }
-  }
-);
-
-cli.command(
-  "clone",
+  "git [user] [repo] [branch] [token]",
   "Clone Github repository",
   {
     user: {
@@ -127,7 +67,7 @@ cli.command(
         let resp: { proceed: boolean } = await prompt({
           type: "confirm",
           name: "proceed",
-          message: "Would you like to overwrite with current folder ?",
+          message: "Would you like to overwrite with current repository ?",
         });
         (resp.proceed
           ? async () => {
@@ -145,4 +85,80 @@ cli.command(
   }
 );
 
-cli.help().recommendCommands().demandCommand().strict().argv;
+cli.command(
+  "mit [name] [year]",
+  "Creates MIT License",
+  {
+    name: {
+      alias: "n",
+      describe: "Name of the user",
+      type: "string",
+      default: "",
+    },
+    year: {
+      alias: "y",
+      describe: "Year of the copyright",
+      type: "number",
+      default: new Date().getFullYear(),
+    },
+  },
+  async function ({ name, year }: { name: string; year: number }) {
+    try {
+      const lic = license(name, year),
+        cwd = path.join(process.cwd(), "LICENSE"),
+        crt = (): void => {
+          fs.writeFileSync(cwd, lic, {
+            encoding: "utf-8",
+          });
+        };
+      if (fs.existsSync(cwd)) {
+        const res: { proceed: boolean } = await prompt({
+          type: "confirm",
+          name: "proceed",
+          message: "Would you like to overwrite the LICENSE ?",
+        });
+        if (res.proceed) crt();
+      } else crt();
+    } catch (e: any) {
+      console.error(red(e.message));
+    }
+  }
+);
+
+cli.command(
+  "ts [src] [build]",
+  "Creates minimal tsconfig.json",
+  {
+    src: {
+      alias: "s",
+      descrbe: "Source dir",
+      type: "string",
+      default: "src",
+    },
+    build: {
+      alias: "o",
+      descrbe: "Build dir",
+      type: "string",
+      default: "build",
+    },
+  },
+  async function ({ src, build }: { src: string; build: string }) {
+    try {
+      let cwd = path.join(process.cwd(), "tsconfig.json");
+      let ts = () =>
+        fs.writeFileSync(cwd, tsconfig(src, build), {
+          encoding: "utf-8",
+        });
+      if (fs.existsSync(cwd)) {
+        const res: { proceed: boolean } = await prompt({
+          type: "confirm",
+          name: "proceed",
+          message: "Would you like to overwrite the tsconfig.json ?",
+        });
+        if (res.proceed) ts();
+      } else ts();
+    } catch (e: any) {}
+  }
+);
+
+cli.recommendCommands().demandCommand().strict().argv;

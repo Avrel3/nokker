@@ -2,10 +2,4 @@ node_modules/
 
 build/
 out/
-
-.cache/
-*.log
-*.error.log
-*.error
-
-.env
+dist/
