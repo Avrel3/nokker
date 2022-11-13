@@ -1,16 +1,13 @@
 import yargs from "yargs/yargs";
 import { hideBin } from "yargs/helpers";
 import { prompt } from "enquirer";
-import { red, white, yellow } from "colorette";
-/// ---  --- ///
+import { blue, red, white, yellow } from "colorette";
 import fs from "fs";
 import path from "path";
-//-- ---//
+
 import * as license from "./utils/license";
 import Git from "./utils/git";
-import { dir } from "console";
-// -- ---//
-/// --- --- ///
+import { randomUUID } from "crypto";
 
 const cli = yargs(hideBin(process.argv))
   .scriptName("nokker")
@@ -19,7 +16,7 @@ const cli = yargs(hideBin(process.argv))
   .alias("h", "help");
 
 cli.command(
-  "git [user] [repo] [branch] [token]",
+  "clone [user] [repo] [branch] [token]",
   "Clone Github repository",
   {
     user: {
@@ -57,8 +54,8 @@ cli.command(
     branch: string;
     token?: string;
   }) {
+    let dir: string = path.join(process.cwd(), repo);
     try {
-      let dir: string = path.resolve(process.cwd(), repo + "-" + branch);
       if (fs.existsSync(dir)) {
         let resp: { proceed: boolean } = await prompt({
           type: "confirm",
@@ -73,7 +70,12 @@ cli.command(
           : () => console.log(white("> ") + yellow("Cancelled")))();
       } else {
         let result: string = await Git(user, repo, branch, token);
-        return console.log(result);
+        if (result.split(" ")[0] != "\x1B[32mRepository") throw new Error();
+        try {
+          fs.renameSync(user + "-" + branch, repo);
+        } catch (e: any) {
+          throw new Error();
+        }
       }
     } catch (e: any) {
       console.error(red("Task failed"));
@@ -82,7 +84,7 @@ cli.command(
 );
 
 cli.command(
-  "lic [type] [name] [year]",
+  "lic [type] [user] [year]",
   "Creates License",
   {
     type: {
@@ -95,7 +97,7 @@ cli.command(
       alias: "u",
       describe: "Name of the user",
       type: "string",
-      default: "",
+      default: "John doe",
     },
     year: {
       alias: "n",
@@ -130,7 +132,7 @@ cli.command(
           encoding: "utf-8",
         });
       };
-      if (yes) crt();
+      if (yes) return crt();
       if (fs.existsSync(cwd)) {
         const res: { proceed: boolean } = await prompt({
           type: "confirm",
@@ -173,17 +175,28 @@ cli.command(
       Git("Avrel3", "tw", "main", undefined, cwd)
         .then((res: string) => {
           if (res.split(" ")[0] != "\x1B[32mRepository") throw new Error();
+          console.log(blue(`cd ${name}\tnpm\\yarn\\pnpm install`));
         })
-        .catch((e: any) => {
+        .catch((_: any) => {
           console.log(red("Creation failed"));
         })
         .finally(() => {
-          fs.renameSync(resort, cwd +" ");
-          fs.rmSync(resort, { recursive: true, force: true });
+          try {
+            let hash: string = randomUUID();
+            if (fs.existsSync(resort)) {
+              fs.renameSync(resort, hash);
+              fs.rmSync(resort, { recursive: true, force: true });
+              if (fs.existsSync(cwd)) {
+                fs.rmSync(cwd, { recursive: true, force: true });
+                fs.renameSync(hash, cwd);
+                fs.rmSync(hash, { recursive: true, force: true });
+              }
+            }
+          } catch (e: any) {}
         });
     };
     if (!fs.existsSync(cwd)) return temp();
-    if (!isEmptyDir(cwd)) return console.log(red("fatal: Folder not empty"));
+    if (!isEmptyDir(cwd)) return console.log(red("fatal: Directory not empty"));
     temp();
   }
 );
