@@ -6,7 +6,8 @@ export default async function (
   user: string,
   repo: string,
   branch: string,
-  token?: string
+  token?: string,
+  location?: string
 ) {
   const git = `https://${
     token ? token + "@" : ""
@@ -19,7 +20,7 @@ export default async function (
       },
     });
 
-    new AdmZip(resp.data).extractAllTo(process.cwd(), true, false);
+    new AdmZip(resp.data).extractAllTo(location ?? process.cwd(), true, false);
 
     return green("Repository cloned");
   } catch (e: any) {

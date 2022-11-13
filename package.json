@@ -15,16 +15,12 @@
   "homepage": "https://github.com/Avrel3/nokker/#readme",
   "scripts": {
     "build": "tsc",
-    "build:esm": "tsc --module es6 --target es5 --outDir lib/esm",
-    "build:cjs": "tsc --module commonjs --target es5 --outDir lib/cjs",
-    "export": "npm run build:esm && npm run build:cjs"
+    "prepare": "npm run build"
   },
   "keywords": [
-    "cli",
-	"git",
-	"license generator",
-	"config generator",
-	"template generator"
+    "git",
+    "template generator",
+    "cli"
   ],
   "repository": {
     "type": "git",

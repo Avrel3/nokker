@@ -6,9 +6,8 @@ import { red, white, yellow } from "colorette";
 import fs from "fs";
 import path from "path";
 //-- ---//
-import license from "./license";
-import Git from "./git";
-import tsconfig from "./tsconfig";
+import * as license from "./utils/license";
+import Git from "./utils/git";
 // -- ---//
 /// --- --- ///
 
@@ -82,31 +81,55 @@ cli.command(
 );
 
 cli.command(
-  "mit [name] [year]",
-  "Creates MIT License",
+  "lic [type] [name] [year]",
+  "Creates License",
   {
-    name: {
-      alias: "n",
+    type: {
+      alias: "t",
+      describe: "License [MIT or ISC]",
+      type: "string",
+      default: "ISC",
+    },
+    user: {
+      alias: "u",
       describe: "Name of the user",
       type: "string",
       default: "",
     },
     year: {
-      alias: "y",
+      alias: "n",
       describe: "Year of the copyright",
       type: "number",
       default: new Date().getFullYear(),
     },
+    yes: {
+      alias: "y",
+      describe: "force",
+      type: "boolean",
+      default: false,
+    },
   },
-  async function ({ name, year }: { name: string; year: number }) {
+  async function ({
+    type,
+    user,
+    year,
+    yes,
+  }: {
+    type: string;
+    user: string;
+    year: number;
+    yes: boolean;
+  }) {
     try {
-      const lic = license(name, year),
-        cwd = path.join(process.cwd(), "LICENSE"),
-        crt = (): void => {
-          fs.writeFileSync(cwd, lic, {
-            encoding: "utf-8",
-          });
-        };
+      let lic: string = license.isc(user, year);
+      let cwd: string = path.join(process.cwd(), "LICENSE");
+      if (type.toUpperCase() == "MIT") lic = license.mit(user, year);
+      let crt = (): void => {
+        fs.writeFileSync(cwd, lic, {
+          encoding: "utf-8",
+        });
+      };
+      if (yes) crt();
       if (fs.existsSync(cwd)) {
         const res: { proceed: boolean } = await prompt({
           type: "confirm",
@@ -122,38 +145,41 @@ cli.command(
 );
 
 cli.command(
-  "ts [src] [build]",
-  "Creates minimal tsconfig.json",
+  "create [name]",
+  "Creates react app with ts, tailwind && parcel",
   {
-    src: {
-      alias: "s",
-      descrbe: "Source dir",
+    name: {
+      alias: "n",
+      descrbe: "Name of the project",
       type: "string",
-      default: "src",
-    },
-    build: {
-      alias: "d",
-      descrbe: "Out dir",
-      type: "string",
-      default: "build",
+      default: ".",
     },
   },
-  async function ({ src, build }: { src: string; build: string }) {
+  async function ({ name }: { name: string }) {
     try {
-      let cwd = path.join(process.cwd(), "tsconfig.json");
-      let ts = () =>
-        fs.writeFileSync(cwd, tsconfig(src, build), {
-          encoding: "utf-8",
-        });
-      if (fs.existsSync(cwd)) {
-        const res: { proceed: boolean } = await prompt({
-          type: "confirm",
-          name: "proceed",
-          message: "Would you like to overwrite the tsconfig.json ?",
-        });
-        if (res.proceed) ts();
-      } else ts();
-    } catch (e: any) {}
+      function isEmptyDir(loc: string) {
+        try {
+          const directory = fs.opendirSync(loc);
+          const entry = directory.readSync();
+          directory.close();
+          return entry === null;
+        } catch (error) {
+          return false;
+        }
+      }
+      let cwd: string = path.resolve(process.cwd(), name);
+      if (!isEmptyDir(cwd)) return console.log(red("fatal: Folder not empty"));
+      Git("Avrel3", "tw", "main", undefined, cwd)
+        .then((e: string) => {
+          console.log(e.split(" ")[0]);
+          if (e.split(" ")[0] == "") {
+            throw new Error("s");
+          }
+        })
+        .catch((e: any) => {});
+    } catch (e: any) {
+      console.log(red("Creation failed"));
+    }
   }
 );
 
