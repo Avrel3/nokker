@@ -172,18 +172,15 @@ cli.command(
     const temp = () => {
       Git("Avrel3", "tw", "main", undefined, cwd)
         .then((res: string) => {
-          if (res.split(" ")[0] == "\x1B[32mRepository") {
-          } else {
-            return console.log(red("Creation failed"));
-          }
+          if (res.split(" ")[0] != "\x1B[32mRepository") throw new Error();
         })
         .catch((e: any) => {
           console.log(red("Creation failed"));
         })
         .finally(() => {
+          fs.renameSync(resort, cwd +" ");
           fs.rmSync(resort, { recursive: true, force: true });
         });
-      fs.renameSync(resort, cwd);
     };
     if (!fs.existsSync(cwd)) return temp();
     if (!isEmptyDir(cwd)) return console.log(red("fatal: Folder not empty"));
