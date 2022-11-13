@@ -8,6 +8,7 @@ import path from "path";
 //-- ---//
 import * as license from "./utils/license";
 import Git from "./utils/git";
+import { dir } from "console";
 // -- ---//
 /// --- --- ///
 
@@ -156,30 +157,37 @@ cli.command(
     },
   },
   async function ({ name }: { name: string }) {
-    try {
-      function isEmptyDir(loc: string) {
-        try {
-          const directory = fs.opendirSync(loc);
-          const entry = directory.readSync();
-          directory.close();
-          return entry === null;
-        } catch (error) {
-          return false;
-        }
+    function isEmptyDir(loc: string) {
+      try {
+        const directory = fs.opendirSync(loc);
+        const entry = directory.readSync();
+        directory.close();
+        return entry === null;
+      } catch (error) {
+        return false;
       }
-      let cwd: string = path.resolve(process.cwd(), name);
-      if (!isEmptyDir(cwd)) return console.log(red("fatal: Folder not empty"));
+    }
+    let cwd: string = path.resolve(process.cwd(), name);
+    let resort: string = path.join(cwd, "tw-main");
+    const temp = () => {
       Git("Avrel3", "tw", "main", undefined, cwd)
-        .then((e: string) => {
-          console.log(e.split(" ")[0]);
-          if (e.split(" ")[0] == "") {
-            throw new Error("s");
+        .then((res: string) => {
+          if (res.split(" ")[0] == "\x1B[32mRepository") {
+          } else {
+            return console.log(red("Creation failed"));
           }
         })
-        .catch((e: any) => {});
-    } catch (e: any) {
-      console.log(red("Creation failed"));
-    }
+        .catch((e: any) => {
+          console.log(red("Creation failed"));
+        })
+        .finally(() => {
+          fs.rmSync(resort, { recursive: true, force: true });
+        });
+      fs.renameSync(resort, cwd);
+    };
+    if (!fs.existsSync(cwd)) return temp();
+    if (!isEmptyDir(cwd)) return console.log(red("fatal: Folder not empty"));
+    temp();
   }
 );
 
