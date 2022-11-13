@@ -1,10 +1,10 @@
 # Nokker
 
-## Nodejs Cli App for building projects template and config file
+## Nodejs Cli App for building projects template
 
 # Template and Config
--   Tsconfig.json
--   License (MIT)
+-   React template with tailwind an typescript
+-   License ( MIT || ISC )
 
 # Others
 -   Download github repository without git installed

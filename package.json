@@ -1,12 +1,13 @@
 {
   "name": "nokker",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Nodejs cli for building projects",
   "private": false,
   "license": "MIT",
   "main": "lib",
   "files": [
-    "lib"
+    "lib",
+    "LICENSE"
   ],
   "bin": {
     "nokker": "bin/nokker",

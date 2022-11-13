@@ -4,10 +4,10 @@ import { prompt } from "enquirer";
 import { blue, red, white, yellow } from "colorette";
 import fs from "fs";
 import path from "path";
+import { randomUUID } from "crypto";
 
 import * as license from "./utils/license";
 import Git from "./utils/git";
-import { randomUUID } from "crypto";
 
 const cli = yargs(hideBin(process.argv))
   .scriptName("nokker")
@@ -64,18 +64,17 @@ cli.command(
         });
         (resp.proceed
           ? async () => {
-              let result: string = await Git(user, repo, branch, token);
-              return console.log("> " + result);
+              console.log("Cloning into " + repo + "...");
+              const res: string = await Git(user, repo, branch, token);
+              console.log("> " + res);
             }
           : () => console.log(white("> ") + yellow("Cancelled")))();
       } else {
+        console.log("Cloning into " + repo + "...");
         let result: string = await Git(user, repo, branch, token);
         if (result.split(" ")[0] != "\x1B[32mRepository") throw new Error();
-        try {
-          fs.renameSync(user + "-" + branch, repo);
-        } catch (e: any) {
-          throw new Error();
-        }
+        console.log("> " + result);
+        fs.renameSync(repo + "-" + branch, repo);
       }
     } catch (e: any) {
       console.error(red("Task failed"));
@@ -149,7 +148,7 @@ cli.command(
 
 cli.command(
   "create [name]",
-  "Creates react app with ts, tailwind && parcel",
+  "Creates react app with ts, tailwind & parcel",
   {
     name: {
       alias: "n",
