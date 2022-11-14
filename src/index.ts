@@ -5,7 +5,7 @@ import { red, white } from "colorette";
 import fs from "fs";
 import path from "path";
 
-import * as license from "./utils/license";
+import { mit, isc } from "./utils/license";
 import Git from "./utils/git";
 
 import { createApp } from "./utils/util";
@@ -108,9 +108,9 @@ cli.command(
     yes: boolean;
   }) {
     try {
-      let lic: string = license.isc(user, year),
+      let lic: string = isc(user, year),
         cwd: string = path.join(process.cwd(), "LICENSE");
-      if (type.toUpperCase() == "MIT") lic = license.mit(user, year);
+      if (type.toUpperCase() == "MIT") lic = mit(user, year);
       let crt = (): void => {
         fs.writeFileSync(cwd, lic, {
           encoding: "utf-8",
@@ -146,7 +146,7 @@ cli.command(
     let cwd: string = path.resolve(process.cwd(), name),
       resort: string = path.join(cwd, "tw-main");
     if (fs.existsSync(cwd))
-      return console.log(white("fatal: ") + red(`' ${name} ' already exists`));
+      return console.log(white("fatal: ") + red(`${name} already exists`));
     createApp("Avrel3", "tw", "main", name, resort, cwd);
   }
 );

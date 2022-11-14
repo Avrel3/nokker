@@ -24,9 +24,9 @@ const createApp = (
   cwd: string,
   token?: string
 ) => {
+  console.log("Creating " + name + " ...");
   Git(user, repo, branch, token, cwd)
     .then((res: string) => {
-      console.log("Creating " + name + " ...");
       if (res.split(" ")[0] != "\x1B[32mRepository") throw new Error();
       console.log(blue(`cd ${name}\tnpm\\yarn\\pnpm install`));
     })
