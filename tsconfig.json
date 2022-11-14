@@ -2,10 +2,12 @@
   "compilerOptions": {
     "rootDir": "src",
     "moduleResolution": "node",
-    "module": "commonjs",
-    "target": "ES6",
+    "types": ["node"],
+    "module": "CommonJS",
+    "target": "ES5",
     "outDir": "lib",
     "removeComments": true,
+    "allowSyntheticDefaultImports": true,
     "pretty": true,
     "noEmitOnError": true,
     "esModuleInterop": true,
@@ -15,11 +17,10 @@
     "strict": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
-    "strictFunctionTypes": true,
-    "strictPropertyInitialization": true,
     "alwaysStrict": true,
     "noFallthroughCasesInSwitch": true,
     "skipLibCheck": true
   },
-  "include": ["src/**/*.ts"]
+  "include": ["./src/**/*.ts"],
+  "exclude": ["./node_modules/", "./bin/"]
 }

@@ -3,7 +3,7 @@
 ## Nodejs Cli App for building projects template
 
 # Template and Config
--   React template with tailwind an typescript
+-   React template with tailwind and typescript alongside parcel
 -   License ( MIT || ISC )
 
 # Others

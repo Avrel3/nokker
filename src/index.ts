@@ -8,6 +8,7 @@ import { randomUUID } from "crypto";
 
 import * as license from "./utils/license";
 import Git from "./utils/git";
+import { isEmptyDir } from "./utils/util";
 
 const cli = yargs(hideBin(process.argv))
   .scriptName("nokker")
@@ -54,31 +55,15 @@ cli.command(
     branch: string;
     token?: string;
   }) {
-    let dir: string = path.join(process.cwd(), repo);
-    try {
-      if (fs.existsSync(dir)) {
-        let resp: { proceed: boolean } = await prompt({
-          type: "confirm",
-          name: "proceed",
-          message: "Would you like to overwrite with current repository ?",
-        });
-        (resp.proceed
-          ? async () => {
-              console.log("Cloning into " + repo + "...");
-              const res: string = await Git(user, repo, branch, token);
-              console.log("> " + res);
-            }
-          : () => console.log(white("> ") + yellow("Cancelled")))();
-      } else {
-        console.log("Cloning into " + repo + "...");
-        let result: string = await Git(user, repo, branch, token);
-        if (result.split(" ")[0] != "\x1B[32mRepository") throw new Error();
-        console.log("> " + result);
-        fs.renameSync(repo + "-" + branch, repo);
-      }
-    } catch (e: any) {
-      console.error(red("Task failed"));
-    }
+    let folder: string = repo + "-" + branch,
+      dir: string = path.join(process.cwd(), folder);
+    if (fs.existsSync(dir))
+      return console.log(
+        white("fatal: ") + red(`Folder ${folder} already exists`)
+      );
+    console.log("Cloning into " + folder + " ...");
+    const res: string = await Git(user, repo, branch, token);
+    console.log(res);
   }
 );
 
@@ -141,7 +126,7 @@ cli.command(
         if (res.proceed) crt();
       } else crt();
     } catch (e: any) {
-      console.error(red(e.message));
+      console.log(red(e.message));
     }
   }
 );
@@ -158,21 +143,12 @@ cli.command(
     },
   },
   async function ({ name }: { name: string }) {
-    function isEmptyDir(loc: string) {
-      try {
-        const directory = fs.opendirSync(loc);
-        const entry = directory.readSync();
-        directory.close();
-        return entry === null;
-      } catch (error) {
-        return false;
-      }
-    }
-    let cwd: string = path.resolve(process.cwd(), name);
-    let resort: string = path.join(cwd, "tw-main");
+    let cwd: string = path.resolve(process.cwd(), name),
+      resort: string = path.join(cwd, "tw-main");
     const temp = () => {
       Git("Avrel3", "tw", "main", undefined, cwd)
         .then((res: string) => {
+          console.log("Creating " + name + " ...");
           if (res.split(" ")[0] != "\x1B[32mRepository") throw new Error();
           console.log(blue(`cd ${name}\tnpm\\yarn\\pnpm install`));
         })
@@ -180,18 +156,19 @@ cli.command(
           console.log(red("Creation failed"));
         })
         .finally(() => {
+          let hash: string = randomUUID(),
+            config: object = { recursive: true, force: true };
           try {
-            let hash: string = randomUUID();
             if (fs.existsSync(resort)) {
               fs.renameSync(resort, hash);
-              fs.rmSync(resort, { recursive: true, force: true });
-              if (fs.existsSync(cwd)) {
-                fs.rmSync(cwd, { recursive: true, force: true });
-                fs.renameSync(hash, cwd);
-                fs.rmSync(hash, { recursive: true, force: true });
-              }
+              fs.rmSync(resort, config);
+              // if (fs.existsSync(cwd)) {
+              // fs.rmSync(cwd, config);
+              // fs.renameSync(hash, cwd);
+              // fs.rmSync(hash, config);
+              // }
             }
-          } catch (e: any) {}
+          } catch (_: any) {}
         });
     };
     if (!fs.existsSync(cwd)) return temp();
