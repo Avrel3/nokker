@@ -156,7 +156,7 @@ cli.command(
 
     switch (template) {
       case "react":
-        console.log(`Creating ${template} into ${name} ...`);
+        console.log(`Creating ${template} App into ${name} ...`);
         createApp("Avrel3", "tw", "main", name, cwd);
         break;
       case "express":

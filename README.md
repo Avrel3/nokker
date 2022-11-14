@@ -3,8 +3,11 @@
 ## Nodejs Cli App for building projects template
 
 # Template and Config
--   React template with tailwind and typescript alongside parcel
--   License ( MIT || ISC )
+
+- License ( MIT || ISC ) generator
+- React app template with tailwind and typescript alongside parcel bundler
+- Express app with Chat App ( Js , cjs)
 
 # Others
--   Download github repository without git installed
+
+- Download github repository without git installed
