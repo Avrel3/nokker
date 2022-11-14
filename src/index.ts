@@ -1,14 +1,14 @@
 import yargs from "yargs/yargs";
 import { hideBin } from "yargs/helpers";
 import { prompt } from "enquirer";
-import { blue, red, white, yellow } from "colorette";
+import { red, white } from "colorette";
 import fs from "fs";
 import path from "path";
-import { randomUUID } from "crypto";
 
 import * as license from "./utils/license";
 import Git from "./utils/git";
-import { isEmptyDir } from "./utils/util";
+
+import { createApp } from "./utils/util";
 
 const cli = yargs(hideBin(process.argv))
   .scriptName("nokker")
@@ -108,8 +108,8 @@ cli.command(
     yes: boolean;
   }) {
     try {
-      let lic: string = license.isc(user, year);
-      let cwd: string = path.join(process.cwd(), "LICENSE");
+      let lic: string = license.isc(user, year),
+        cwd: string = path.join(process.cwd(), "LICENSE");
       if (type.toUpperCase() == "MIT") lic = license.mit(user, year);
       let crt = (): void => {
         fs.writeFileSync(cwd, lic, {
@@ -139,41 +139,15 @@ cli.command(
       alias: "n",
       descrbe: "Name of the project",
       type: "string",
-      default: ".",
+      required: true,
     },
   },
   async function ({ name }: { name: string }) {
     let cwd: string = path.resolve(process.cwd(), name),
       resort: string = path.join(cwd, "tw-main");
-    const temp = () => {
-      Git("Avrel3", "tw", "main", undefined, cwd)
-        .then((res: string) => {
-          console.log("Creating " + name + " ...");
-          if (res.split(" ")[0] != "\x1B[32mRepository") throw new Error();
-          console.log(blue(`cd ${name}\tnpm\\yarn\\pnpm install`));
-        })
-        .catch((_: any) => {
-          console.log(red("Creation failed"));
-        })
-        .finally(() => {
-          let hash: string = randomUUID(),
-            config: object = { recursive: true, force: true };
-          try {
-            if (fs.existsSync(resort)) {
-              fs.renameSync(resort, hash);
-              fs.rmSync(resort, config);
-              // if (fs.existsSync(cwd)) {
-              // fs.rmSync(cwd, config);
-              // fs.renameSync(hash, cwd);
-              // fs.rmSync(hash, config);
-              // }
-            }
-          } catch (_: any) {}
-        });
-    };
-    if (!fs.existsSync(cwd)) return temp();
-    if (!isEmptyDir(cwd)) return console.log(red("fatal: Directory not empty"));
-    temp();
+    if (fs.existsSync(cwd))
+      return console.log(white("fatal: ") + red(`' ${name} ' already exists`));
+    createApp("Avrel3", "tw", "main", name, resort, cwd);
   }
 );
 
