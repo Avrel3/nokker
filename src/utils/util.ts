@@ -2,6 +2,7 @@ import { blue, red } from "colorette";
 import fs from "fs";
 import Git from "./git";
 import { randomUUID } from "crypto";
+import path from "path";
 
 function isEmptyDir(loc: string) {
   try {
@@ -20,11 +21,11 @@ const createApp = (
   repo: string,
   branch: string,
   name: string,
-  resort: string,
   cwd: string,
   token?: string
 ) => {
-  console.log("Creating " + name + " ...");
+  let resort: string = path.resolve(cwd, repo + "-" + branch);
+
   Git(user, repo, branch, token, cwd)
     .then((res: string) => {
       if (res.split(" ")[0] != "\x1B[32mRepository") throw new Error();

@@ -7,7 +7,6 @@ import path from "path";
 
 import { mit, isc } from "./utils/license";
 import Git from "./utils/git";
-
 import { createApp } from "./utils/util";
 
 const cli = yargs(hideBin(process.argv))
@@ -132,8 +131,8 @@ cli.command(
 );
 
 cli.command(
-  "create [name]",
-  "Creates react app with ts, tailwind & parcel",
+  "create [name] [template]",
+  "Creates project template",
   {
     name: {
       alias: "n",
@@ -141,13 +140,30 @@ cli.command(
       type: "string",
       required: true,
     },
+    template: {
+      alias: "t",
+      describe: "Project template",
+      type: "string",
+      required: true,
+      choices: ["react", "express"],
+    },
   },
-  async function ({ name }: { name: string }) {
-    let cwd: string = path.resolve(process.cwd(), name),
-      resort: string = path.join(cwd, "tw-main");
+  async function ({ name, template }: { name: string; template: string }) {
+    let cwd: string = path.resolve(process.cwd(), name);
+
     if (fs.existsSync(cwd))
       return console.log(white("fatal: ") + red(`${name} already exists`));
-    createApp("Avrel3", "tw", "main", name, resort, cwd);
+
+    switch (template) {
+      case "react":
+        console.log(`Creating ${template} into ${name} ...`);
+        createApp("Avrel3", "tw", "main", name, cwd);
+        break;
+      case "express":
+        console.log(`Creating ${template} into ${name} ...`);
+        createApp("Avrel3", "taseract", "main", name, cwd);
+        break;
+    }
   }
 );
 
