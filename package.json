@@ -1,6 +1,6 @@
 {
   "name": "nokker",
-  "version": "1.0.1",
+  "version": "1.1.1",
   "description": "Nodejs cli for building projects",
   "private": false,
   "license": "MIT",
