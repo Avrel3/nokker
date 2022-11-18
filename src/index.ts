@@ -7,6 +7,7 @@ import path from "path";
 
 import { mit, isc } from "./utils/license";
 import Git from "./utils/git";
+import Ignore from "./utils/ignore";
 import { createApp } from "./utils/util";
 
 const cli = yargs(hideBin(process.argv))
@@ -63,6 +64,28 @@ cli.command(
     console.log("Cloning into " + folder + " ...");
     const res: string = await Git(user, repo, branch, token);
     console.log(res);
+  }
+);
+
+cli.command(
+  "ignore [template]",
+  "Creates .gitignore with a template",
+  {
+    template: {
+      alias: "t",
+      describe: "Creates .gitignore file with the template",
+      type: "string",
+      default: "empty",
+    },
+    yes: {
+      alias: "y",
+      describe: "force",
+      type: "boolean",
+      default: false,
+    },
+  },
+  async ({ template, yes }: { template: string; yes: boolean }) => {
+    await Ignore(template, yes);
   }
 );
 

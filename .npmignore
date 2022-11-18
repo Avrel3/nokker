@@ -6,3 +6,6 @@ tsconfig.json
 .gitignore
 .npmignore
 package-lock.json
+
+
+test/
